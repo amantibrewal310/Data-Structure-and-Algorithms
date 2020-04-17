@@ -19,12 +19,14 @@ pair <int, int> extendedEuclid(int a, int b) {
         p.second = 0;
         return p;
     }
+
     p = extendedEuclid(b, a % b);
+
     int x = p.second;
     int y = p.first - (a / b) * p.second;
     p = make_pair(x, y);
-    return p;
 
+    return p;
 }
 
 signed main() {
