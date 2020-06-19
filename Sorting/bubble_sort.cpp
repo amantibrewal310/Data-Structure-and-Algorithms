@@ -13,6 +13,21 @@ void bubble_sort(vector<int> &v, int n) {
 
 }
 
+void bubble_sort_recursive(vector<int> &v, int j, int n) {
+    // base case
+    if(n == 1)
+        return;
+    
+    if(j == n - 1) {
+        //single pass of current array has been done
+        return bubble_sort_recursive(v, 0, n - 1);
+    }
+    if(v[j] > v[j + 1]) {
+        swap(v[j], v[j + 1]);
+    }
+    bubble_sort_recursive(v, j + 1, n);
+}
+
 signed main() {
     int n;
     cin >> n;
