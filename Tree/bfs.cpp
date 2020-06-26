@@ -40,10 +40,37 @@ void bfs(node* root) {
     return;
     
 }
+void bfs2(node* root) {
+    queue<pair<node*, int>> q;
+    int k = 1;
+    q.push(make_pair(root, k));
+    int prevLevel = 1;
+    while(!q.empty()) {
+        pair<node*, int> f = q.front();
+        if (prevLevel != f.second)
+        {
+            cout << endl;
+            prevLevel = f.second;
+        }
+        cout << f.first->data << " ";
+        
+        q.pop();
+
+        if(f.first->left) {
+            q.push(make_pair(f.first->left, f.second + 1));
+        }
+        if(f.first->right) {
+            q.push(make_pair(f.first->right, f.second + 1));
+        }
+    }
+    return;
+}
 
 signed main() {
 
     node* root = buildTree();
     bfs(root);
+    cout << endl;
+    bfs2(root);
 
 }
