@@ -1,36 +1,63 @@
 #include<bits/stdc++.h>
 using namespace std;
-
-bool cmp(string a, string b)
+int findMedian(vector<vector<int>> &A)
 {
-    string ab = a + b;
-    string ba = b + a;
 
-    return ab.compare(ba) > 0 ? 1 : 0;
+    int col = A[0].size();
+    int row = A.size();
+
+    int start = INT_MAX, end = INT_MIN;
+    for (int i = 0; i < row; i++)
+    {
+        if (A[i][0] < start)
+            start = A[i][0];
+    }
+    for (int i = 0; i < row; i++)
+    {
+        if (A[i][col - 1] > end)
+            end = A[i][col - 1];
+    }
+
+    int ans;
+    int count = 0;
+    int median = (row * col / 2) + 1;
+    int mid;
+
+    while (start <= end)
+    {
+        mid = start + (end - start) / 2;
+        count = 0;
+
+        for (int i = 0; i < row; i++)
+        {
+            count += upper_bound(A[i].begin(), A[i].end(), mid) - A[i].begin();
+        }
+
+        if (count < median)
+            start = mid + 1;
+
+        else if( count > median)
+            end = mid - 1;
+        else if(count == median) {
+            ans = mid;
+            end = mid - 1;
+        }
+
+        // count = 0;
+    }
+
+    return start;
 }
 
-string largestNumber(const vector<int> &A)
-{
-
-    vector<string> v;
-    for (int i = 0; i < A.size(); i++)
-    {
-        v.push_back(to_string(A[i]));
+signed main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> v(n, vector<int>(m));
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            cin >> v[i][j];
+        }
     }
+    findMedian(v);
 
-    sort(v.begin(), v.end(), cmp);
-    string ans = "";
-    for (int i = 0; i < v.size(); i++)
-        ans += v[i];
-
-    int i = 0;
-    while (ans[i] == '0')
-    {
-        i++;
-    }
-
-    if (i == ans.length())
-        ans = "0";
-
-    return ans;
 }

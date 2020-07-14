@@ -20,7 +20,7 @@ int countRotations(vector<int> &v, int low, int high) {
 }
 int findMin(const vector<int> &A)
 {
-    int low = 0, high = (int)A.size() - 1;
+    int low = 0, high = A.size() - 1;
     int len = A.size();
     while (low <= high)
     {
@@ -44,5 +44,6 @@ signed main() {
     vector<int> v(n);
     for(int i = 0; i < n; i++)
         cin >> v[i];
+    cout << findMin(v) << endl;
     cout << countRotations(v, 0, n - 1) << endl;
 }
