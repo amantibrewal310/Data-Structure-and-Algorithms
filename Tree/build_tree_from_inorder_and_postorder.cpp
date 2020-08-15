@@ -1,64 +1,92 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-struct node {
-    int data;
-    node* left;
-    node* right;
-    node(int x) {
-        data = x;
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode(int x) {
+        val = x;
         left = NULL;
         right = NULL;
     }
 };
 
-node* createTreeFromTrav(vector<int> pre, vector<int> in, int start, int end) {
-    // Here start and end variable will be use for inorder array;
+int findIndex(vector<int> &inorder, int start, int end, int key) {
+    for(int i = start; i <= end; i++) {
+        if(inorder[i] == key)
+            return i;
+    }
+    return -1;
+}
 
-    static int i = 0; // for preorder traversal node
-    
-    // base case
-    if(start > end)
+TreeNode* helper(vector<int> &inorder, int inStart, int inEnd, vector<int> &postorder, int postStart, int postEnd) {
+    if(inStart > inEnd or postStart > postEnd) 
         return NULL;
     
-    node *root = new node(pre[i]);
+    int rootVal = postorder[postEnd];
+    TreeNode* root = new TreeNode(rootVal);
 
-    int idx = -1;
-    for(int j = start; j <= end; j++) {
-        if(in[j] == pre[i]) {
-            idx = j;
-            break;
-        }
-    }
-    i++;
-    root->left = createTreeFromTrav(pre, in, start, idx - 1);
-    root->right = createTreeFromTrav(pre, in, idx + 1, end);
+    int rootIndex = findIndex(inorder, inStart, inEnd, rootVal);
+
+    int leftTreeSize = rootIndex - inStart;
+    int rightTreeSize = inEnd - rootIndex;
+
+    root->left = helper(inorder, inStart, rootIndex - 1, postorder, postStart, postStart + leftTreeSize - 1);
+
+    root->right = helper(inorder, rootIndex + 1, inEnd, postorder, postEnd - rightTreeSize, postEnd - 1);
     return root;
 }
 
-void bfs(node* root) {
-    queue<node*> q;
-    q.push(root);
+
+TreeNode* buildTree(vector<int> inorder, vector<int> postorder) {
+    int n = inorder.size();
+    if(n == 0)
+        return NULL;
+    return helper(inorder, 0, n - 1, postorder, 0, n - 1);
+}
+
+vector<vector<int>> bfs(TreeNode* root) {
+    if(root == NULL)
+        return {};
+    queue<pair<TreeNode*, int>> q;
+    q.push({root, 0});
+    vector<vector<int>> ans;
     while(!q.empty()) {
-        node* f = q.front();
-        cout << f->data << " ";
+        auto p = q.front();
         q.pop();
-        if(f->left)
-            q.push(f->left);
-        if(f->right)
-            q.push(f->right);
+        if(p.second + 1 > ans.size())
+            ans.push_back({p.first->val});
+        else
+            ans[p.second].push_back(p.first->val);
+        
+        if(p.first->left)
+            q.push({p.first->left, p.second + 1});
+        if(p.first->right) 
+            q.push({p.first->right, p.second + 1});
     }
+    return ans;
 }
 
 signed main() {
     int n;
     cin >> n;
-    vector<int> pre(n); // Preorder array
-    for(int &x : pre)
+    vector<int> inorder(n), postorder(n);
+    for(auto &x : inorder) {
         cin >> x;
-    vector<int> in(n); // Inorder array
-    for(int &x : in)
+    } 
+    for(auto &x : postorder) {
         cin >> x;
-    node* root = createTreeFromTrav(pre, in, 0, n - 1);
-    bfs(root);
+    }
+
+    TreeNode* root = buildTree(inorder, postorder);
+    auto res = bfs(root);
+
+    for(int i = 0; i < res.size(); i++) {
+        for(int j = 0; j < res[i].size(); j++) {
+            cout << res[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
