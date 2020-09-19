@@ -1,109 +1,96 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
+#define int long long
 
-vector<int> dir{0, 1, 0, -1, 0};
+const int mxN = 1e5 + 10;
+vector<int> isprime;
+vector<vector<int>> mat, ways;
+int n, m;
 
-//stores elements that became 1 or were already 1.
-std::queue<pair<int, int>> q;
-
-//to get any island
-void DFS(vector<vector<int>> &A, vector<vector<int>> &dist, int row, int col)
-{ //change it to -1 so that we don't add it more than once.
-    A[row][col] = -1;
-    //distance[i][j] means flips done to make it 1, as it was already 1 hence it is 0.
-    dist[row][col] = 0;
-    q.push(make_pair(row, col));
-    for (int i = 0; i < 4; i++)
-    {
-        int curRow = row + dir[i];
-        int curCol = col + dir[i + 1];
-        //add connected 1 to this island.
-        if (curRow >= 0 and curRow < A.size() and curCol >= 0 and curCol < A[0].size() and A[curRow][curCol] == 1)
-        {
-            DFS(A, dist, curRow, curCol);
-        }
-    }
-}
-
-//gives the minimum flips to connect the island out of all available ways.
-int shortestPath(vector<vector<int>> &A, vector<vector<int>> &dist)
-{
-    int m = A.size();
-    int n = A[0].size();
-    int minimum{INT_MAX};
-    while (!q.empty())
-    {
-        auto coord = q.front();
-        q.pop();
-        for (int i = 0; i < 4; i++)
-        {
-            int curRow = coord.first + dir[i];
-            int curCol = coord.second + dir[i + 1];
-            int curDistance = dist[coord.first][coord.second] + 1;
-            if (curRow >= 0 and curRow < m and curCol >= 0 and curCol < n and A[curRow][curCol] != -1)
-            {
-                if (curDistance < dist[curRow][curCol])
-                { //if current node was 0 then make it 1 and store the number of flips done to make 1
-                    dist[curRow][curCol] = curDistance;
-                    q.push(make_pair(curRow, curCol));
-                }
-
-                //if we reach  an island then update minimum.
-                if (A[curRow][curCol] == 1)
-                {
-                    minimum = min(minimum, dist[coord.first][coord.second]);
-                }
+void sieve() {
+    isprime.assign(mxN, 1);
+    isprime[0] = isprime[1] = 0;
+    for (int i = 2; i * i < mxN; i++) {
+        if(isprime[i]) {
+            for (int j = 2 * i; j < mxN; j+=i) {
+                isprime[j] = 0;
             }
         }
     }
-
-    return minimum;
 }
 
-int shortestBridge(vector<vector<int>> &A)
-{
-    if (A.empty())
-        return 0;
-    int m = A.size();
-    int n = A[0].size();
-    vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
-    for (int i = 0; i < m; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            if (A[i][j] == 1)
-            { //finding the starting point of any island.
-                DFS(A, dist, i, j);
-                return shortestPath(A, dist);
+signed main() {
+    cin >> n >> m;
+    ways.assign(n, vector<int>(m, 0));
+    mat.assign(n, vector<int>(m, 0));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> mat[i][j];
+        }
+    }
+
+    sieve();
+    ways[0][0] = 1;
+
+    for (int j = 1; j < m; j++) {
+        int a = mat[0][j];
+        if(isprime[a]) {
+            ways[0][j] = ways[0][j - 1];
+        }
+    }
+    for (int i = 1; i < n; i++) {
+        int a = mat[i][0];
+        if(isprime[a]) {
+            ways[i][0] = ways[i - 1][0];
+        }
+    }
+
+    for (int i = 1; i < n; i++) {
+        for (int j = 1; j < m; j++) {
+            int a = mat[i][j];
+            if(!isprime[a]) {
+                continue;
             }
-        }
-    }
-    return -1;
-}
 
-int main()
-{
-    int n;
-    cin >> n;
-    int m;
-    cin >> m;
-    vector<vector<int>> v;
-    for (int i = 0; i < n; i++)
-    {
-        vector<int> temp;
-        v.push_back(temp);
-    }
-
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            int x;
-            cin >> x;
-            v[i].push_back(x);
-            //cout << x << endl;
+            ways[i][j] = ways[i][j - 1] + ways[i - 1][j] + ways[i - 1][j - 1];
         }
     }
 
-    cout << shortestBridge(v) << endl;
+    vector<pair<int, int>> ans;
+    ans.push_back({0, 0});
+
+    int i = 0, j = 0;
+    while(i < n && j < m) {
+        
+        if(i < n-1 && j < m-1 && ways[i+1][j+1] > 0) {
+            ans.push_back({i + 1, j + 1});
+            i += 1, j += 1;
+        }
+        else if(i < n-1 && ways[i+1][j] > 0) {
+            ans.push_back({i + 1, j});
+            i += 1;
+        }
+        else if (j < m-1 && ways[i][j+1] > 0) {
+            ans.push_back({i, j + 1});
+            j += 1;
+        }
+        else {
+            break;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cout << ways[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << ways[n - 1][m - 1] << endl;
+    if(ways[n-1][m-1] > 0) {
+        for(auto p: ans) {
+            cout << p.first+1 << " " << p.second+1 << endl;
+        }
+    }
 }
