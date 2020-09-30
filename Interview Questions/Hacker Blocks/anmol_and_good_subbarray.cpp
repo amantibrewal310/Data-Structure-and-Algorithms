@@ -1,32 +1,22 @@
 //?https://hack.codingblocks.com/app/contests/1783/1739/problem
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
+#define int long long
 
 signed main() {
     int n;
     cin >> n;
-    vector<int> nums(n);
-    for(auto &num : nums) {
-        cin >> num;
-    }
-    vector<int> prefix(n);
-    prefix[0] = nums[0];
-
-    for(int i = 1; i < n; i++) {
-        prefix[i] = prefix[i - 1] + nums[i];
-    }
-    int cnt = 0;
+    vector<int> nums(n + 1);
     map<int, int> mp;
+    int start = 0, sum = 0, ans = 0;
+    mp[0] = 1; // when prefix is zero it means that from the 0th index the subarray have sum zero till now
     for(int i = 0; i < n; i++) {
-        if(prefix[i] == 0)
-            cnt++;
-        if(mp.find(prefix[i]) != mp.end()) {
-            cnt += mp[prefix[i]];
-        }
-        mp[prefix[i]]++;
+        cin >> nums[i];
+        sum += nums[i];
+
+        start = max(start, mp[sum]);
+        ans += (i - start + 1); 
+        mp[sum] = i + 2; // storing the index which can become next potential start point
     }
-    // cnt += mp[0];
-    int total = n * (n + 1) / 2;
-    int ans = total - cnt;
     cout << ans << endl;
 }
