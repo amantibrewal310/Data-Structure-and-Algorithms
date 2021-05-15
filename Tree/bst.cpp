@@ -94,7 +94,7 @@ node* deleteInBST(node* root, int key) {
             delete root;
             return temp;
         } else if(root->left != NULL and root->right == NULL) {
-            node* temp = root->right;
+            node* temp = root->left;
             delete root;
             return temp;
         }
