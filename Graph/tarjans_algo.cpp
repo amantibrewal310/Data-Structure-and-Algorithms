@@ -3,28 +3,52 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-pair<int, int> dfs(vector<vector<int>> &adj, vector<int> &visited, int src,
-                   int discoveredId, int lowId) {
-  visited[src] = true;
+class Solution {
+ public:
+  vector<vector<int>> adj, bridges;
+  vector<int> parent, visited, low;
+  int timer = 0;
 
-  for (int nbr : adj[src]) {
-    if (nbr == src) continue;
+  void dfs(int node) {
+    visited[node] = low[node] = timer++;
 
-    if (!visited[nbr]) {
-      pair<int, int> p = dfs(adj, visited, nbr, discoveredId + 1, lowId + 1);
+    for (int child : adj[node]) {
+      if (visited[child] == -1) {
+        parent[child] = node;
+        dfs(child);
 
-      if (p.second > lowId) {
+        low[node] = min(low[node], low[child]);
+
+        if (low[child] > visited[node]) {
+          bridges.push_back({node, child});
+        }
+
+      } else if (child != parent[node]) {
+        low[node] = min(low[node], visited[child]);
       }
     }
   }
-}
+  vector<vector<int>> criticalConnections(int n,
+                                          vector<vector<int>>& connections) {
+    adj.resize(n);
+    parent.resize(n, -1);
+    visited.resize(n, -1);
+    low.resize(n, -1);
+    timer = 0;
 
-signed main() {
-  int n;
-  cin >> n;
-  vector<vector<int>> edges(n);
+    for (int i = 0; i < (int)connections.size(); i++) {
+      int u = connections[i][0];
+      int v = connections[i][1];
 
-  for (auto &edge : edges) {
-    cin >> edge[0] >> edge[1];
+      adj[u].push_back(v);
+      adj[v].push_back(u);
+    }
+
+    for (int i = 0; i < n; i++) {
+      if (visited[i] == -1) {
+        dfs(i);
+      }
+    }
+    return bridges;
   }
-}
+};
