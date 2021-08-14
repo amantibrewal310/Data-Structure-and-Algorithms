@@ -1,82 +1,49 @@
-/****
- *     @Just Another Source code by: ankit.sangwan1999
- *    @created on: 11 Jul 2020
- */
-
 #include <bits/stdc++.h>
 using namespace std;
-#define fastio                      \
-  ios_base::sync_with_stdio(false); \
-  cin.tie(NULL)  //;cout.tie(NULL)
-#define ll long long
-const int mod = 1e9 + 7;
-const long double pie = 3.14159265358979323846;
-#define endl '\n'
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-gp_hash_table<int, ll> ma;  // orderd_map using pb_ds
-
-int ranks[50];
-bool fun(int mid, int l, int p) {
-  int pratas = 0;
-  for (int i = 0; i < l; i++) {
-    // pratas += bin(2*mid/ranks[i]);
-    int a = 2 * mid / ranks[i];
-    int biggerRoot = ((int)sqrt(4 * a + 1) - 1) / 2;
-    pratas += biggerRoot >= 0 ? biggerRoot : 0;
+#define ll long long int
+struct _ {
+  ios_base::Init i;
+  _() {
+    cin.sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
   }
-  return pratas >= p;
-}
+} _;
 
-void solve() {
-  int p;
-  cin >> p;
-  int l;
-  cin >> l;
-  for (int i = 0; i < l; i++) {
-    cin >> ranks[i];
-  }
-
-  int low = 0;
-  int high = 4 * p * (p + 1);
-  int ans = 0;
-  while (low <= high) {
-    int mid = low + (high - low) /
-                        2;  // Check if p pratas can be prepared in mid Time.
-
-    // Iterative
-    int pratas = 0;
-    bool did = 0;
-    for (int i = 0; i < l; i++) {
-      // pratas += bin(2*mid/ranks[i]);
-      int a = 2 * mid / ranks[i];
-      int biggerRoot = ((int)sqrt(4 * a + 1) - 1) / 2;
-      pratas += biggerRoot >= 0 ? biggerRoot : 0;
-
-      if (pratas >= p) {
-        high = mid - 1;
-        ans = mid;
-        did = 1;
-        break;
+vector<ll> subset_sum(vector<ll>& a) {
+  ll n = a.size();
+  vector<ll> res;
+  for (ll i = 0; i < (1 << n); i++) {
+    ll sum = 0;
+    for (ll j = 0; j < n; j++) {
+      if (i & (1 << j)) {
+        sum += a[j];
       }
     }
-
-    if (did == 0) {
-      low = mid + 1;
-    }
+    res.push_back(sum);
   }
 
-  cout << ans << endl;
+  return res;
 }
 
-signed main() {
-  fastio;
-  int t = 1;
-  cin >> t;
+int main() {
+  ll n, t;
+  cin >> n >> t;
 
-  while (--t >= 0) {
-    solve();
-  }
+  vector<ll> left(n / 2), right(n - n / 2);
 
+  for (int i = 0; i < n / 2; i++) cin >> left[i];
+  for (int i = 0; i < n - n / 2; i++) cin >> right[i];
+
+  vector<ll> left_sum = subset_sum(left);
+  vector<ll> right_sum = subset_sum(right);
+
+  ll res = 0;
+  map<ll, ll> mp;
+  for (auto i : right_sum) mp[i]++;
+
+  for (ll i = 0; i < left_sum.size(); i++) res += mp[t - left_sum[i]];
+
+  cout << res;
   return 0;
 }

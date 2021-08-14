@@ -3,6 +3,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// Ouick Select Algorithm
+
 int partition(vector<int> &a, int l, int r) {
   int pivot = a[r];
   int i = l - 1;
@@ -26,6 +28,7 @@ int solve(vector<int> &nums, int k) {
 
   while (low <= high) {
     int mid = partition(nums, low, high);
+    // cout << mid << endl;
 
     if (mid + 1 == k)
       return nums[mid];
@@ -35,8 +38,7 @@ int solve(vector<int> &nums, int k) {
       low = mid + 1;
     }
   }
-
-  return nums[low];
+  return -1;
 }
 
 signed main() {

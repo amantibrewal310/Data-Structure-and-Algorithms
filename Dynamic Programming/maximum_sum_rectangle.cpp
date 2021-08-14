@@ -40,7 +40,7 @@ signed main() {
     }
   }
 
-  cout << solve(mat) << endl;
+   cout << solve(mat) << endl;
 }
 
 /*

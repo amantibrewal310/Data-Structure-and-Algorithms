@@ -1,87 +1,64 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
-int main()
-{
-    int t;
-    cin >> t;
-    while (t--)
-    {
-        int n, k;
-        cin >> n >> k;
-        int arr[n + 1];
-        for (int i = 1; i <= n; i++)
-        {
-            cin >> arr[i];
-        }
-        vector<int> v;
-        vector<int> vv;
-        for (int i = 1; i <= n; i++)
-        {
-            if (arr[i] != -1)
-            {
+// } Driver Code Ends
+class Solution {
+ public:
+  int dp[110][110];
+  int vis[100];
+  int maxHeightOfBoxes = 0;
 
-                if (i == arr[i])
-                {
-                    arr[i] = -1;
-                    continue;
-                }
-                int a = arr[i];
-                if (arr[a] == i)
-                {
-                    v.push_back(i);
-                    v.push_back(a);
-                    arr[i] = -1;
-                    arr[a] = -1;
-                    continue;
-                }
-                vv.push_back(i);
-
-                vv.push_back(a);
-                int b = arr[a];
-                vv.push_back(b);
-                arr[i] = arr[b];
-                arr[a] = -1;
-                arr[b] = -1;
-                if (arr[i] != i)
-                    i--;
-                else
-                    arr[i] = -1;
-            }
-        }
-
-        if (v.size() % 4 != 0)
-        {
-            cout << "-1" << endl;
-        }
-        else
-        {
-            for (int i = 0; i < v.size(); i += 4)
-            {
-
-                vv.push_back(v[i]);
-                vv.push_back(v[i + 1]);
-                vv.push_back(v[i + 2]);
-                vv.push_back(v[i]);
-                vv.push_back(v[i + 3]);
-                vv.push_back(v[i + 2]);
-            }
-
-            int l = vv.size() / 3;
-            if (k >= l)
-            {
-                cout << l << endl;
-                for (int i = 0; i < vv.size(); i += 3)
-                {
-                    cout << vv[i] << " " << vv[i + 1] << " " << vv[i + 2];
-                    cout << endl;
-                }
-            }
-            else
-            {
-                cout << "-1" << endl;
-            }
-        }
+  int traverseArray(int height[], int width[], int length[], int n,
+                    int prevLength, int prevWidth) {
+    int mxH = 0;
+    if (dp[prevLength][prevWidth] != -1) return dp[prevLength][prevWidth];
+    for (int j = 0; j < n; j++) {
+      if (length[j] < prevLength && width[j] < prevWidth)
+        mxH = max(mxH, height[j] + traverseArray(height, width, length, n,
+                                                 length[j], width[j]));
+      if (width[j] < prevLength && length[j] < prevWidth)
+        mxH = max(mxH, height[j] + traverseArray(height, width, length, n,
+                                                 width[j], length[j]));
+      if (length[j] < prevLength && height[j] < prevWidth)
+        mxH = max(mxH, width[j] + traverseArray(height, width, length, n,
+                                                length[j], height[j]));
+      if (height[j] < prevLength && length[j] < prevWidth)
+        mxH = max(mxH, width[j] + traverseArray(height, width, length, n,
+                                                height[j], length[j]));
+      if (height[j] < prevLength && width[j] < prevWidth)
+        mxH = max(mxH, length[j] + traverseArray(height, width, length, n,
+                                                 height[j], width[j]));
+      if (width[j] < prevLength && height[j] < prevWidth)
+        mxH = max(mxH, length[j] + traverseArray(height, width, length, n,
+                                                 width[j], height[j]));
     }
-    return 0;
+
+    return dp[prevLength][prevWidth] = mxH;
+  }
+  int maxHeight(int height[], int width[], int length[], int n) {
+    memset(dp, -1, sizeof(dp));
+    memset(vis, 0, sizeof(vis));
+    return traverseArray(height, width, length, n, 105, 105);
+  }
+};
+
+// { Driver Code Starts.
+
+int main() {
+  int t;
+  cin >> t;
+  while (t--) {
+    int n;
+    cin >> n;
+
+    int A[105], B[105], C[105];
+    for (int i = 0; i < n; i++) cin >> A[i];
+    for (int j = 0; j < n; j++) cin >> B[j];
+    for (int k = 0; k < n; k++) cin >> C[k];
+    Solution ob;
+    cout << ob.maxHeight(A, B, C, n) << endl;
+  }
+
+  return 0;
 }
