@@ -1,0 +1,14 @@
+success
+success
+success
+success
+success
+success
+failure
+success
+600 660 user1 user2 
+660 690 user1 user3 
+600 660 user1 user2 
+660 690 user2 user4 
+690
+none

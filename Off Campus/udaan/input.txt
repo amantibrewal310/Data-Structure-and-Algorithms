@@ -1,0 +1,13 @@
+12
+add-user user1
+add-user user2
+add-user user3
+add-user user4
+create-event 2021-07-21 600 60 2 user1 user2
+create-event 2021-07-21 660 30 2 user1 user3
+create-event 2021-07-21 615 60 2 user2 user3
+create-event 2021-07-21 660 30 2 user2 user4
+show-event 2021-07-21 user1
+show-event 2021-07-21 user2
+suggest-slot 2021-07-21 570 750 45 2 user1 user2
+suggest-slot 2021-07-21 570 700 60 2 user2 user3
